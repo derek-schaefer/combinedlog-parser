@@ -44,7 +44,7 @@ parseTimestamp = do
   maybe (fail "invalid timestamp") return time'
 
 parseRequest :: Parser T.Text
-parseRequest = char '\"' *> takeTill (== '\"') <* string "\" "
+parseRequest = char '"' *> takeTill (== '"') <* string "\" "
 
 parseStatus :: Parser Int
 parseStatus = decimal <* char ' '
@@ -53,10 +53,10 @@ parseBytes :: Parser Int
 parseBytes = decimal
 
 parseReferer :: Parser (Maybe T.Text)
-parseReferer = Just <$> (string " \"" *> takeTill (== '\"') <* char '\"') <|> pure Nothing
+parseReferer = Just <$> (string " \"" *> takeTill (== '"') <* char '"') <|> pure Nothing
 
 parseUserAgent :: Parser (Maybe T.Text)
-parseUserAgent = Just <$> (string " \"" *> takeTill (== '\"') <* char '\"') <|> pure Nothing
+parseUserAgent = Just <$> (string " \"" *> takeTill (== '"') <* char '"') <|> pure Nothing
 
 timestampFormat :: String
 timestampFormat = "%d/%b/%Y:%H:%M:%S %z"
