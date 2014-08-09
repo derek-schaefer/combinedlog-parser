@@ -1,6 +1,6 @@
 # Combined Log Parser
 
-A Combined Log format parser in Haskell.
+A Combined Log parser in Haskell.
 
 ## Examples
 
