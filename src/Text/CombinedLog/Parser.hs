@@ -53,10 +53,14 @@ parseBytes :: Parser Int
 parseBytes = decimal
 
 parseReferer :: Parser (Maybe T.Text)
-parseReferer = Just <$> (string " \"" *> takeTill (== '"') <* char '"') <|> pure Nothing
+parseReferer = string " \"-\"" *> pure Nothing <|>
+               Just <$> (string " \"" *> takeTill (== '"') <* char '"') <|>
+               pure Nothing
 
 parseUserAgent :: Parser (Maybe T.Text)
-parseUserAgent = Just <$> (string " \"" *> takeTill (== '"') <* char '"') <|> pure Nothing
+parseUserAgent = string " \"-\"" *> pure Nothing <|>
+                 Just <$> (string " \"" *> takeTill (== '"') <* char '"') <|>
+                 pure Nothing
 
 timestampFormat :: String
 timestampFormat = "%d/%b/%Y:%H:%M:%S %z"
