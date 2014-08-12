@@ -5,15 +5,14 @@ module Text.CombinedLog.Parser where
 import Text.CombinedLog.Types
 
 import Control.Applicative
-import Data.Attoparsec.Text
+import Data.Attoparsec.ByteString.Char8
+import qualified Data.ByteString.Char8 as B
 import Data.Maybe
-import Data.Text (Text)
-import qualified Data.Text as T
 import Data.Time.LocalTime
 import Data.Time.Format
 import System.Locale
 
-readEvent :: Text -> Maybe Event
+readEvent :: B.ByteString -> Maybe Event
 readEvent src = either (\_ -> Nothing) Just ee
     where ee = parseOnly parseEvent src
 
@@ -29,24 +28,23 @@ parseEvent = Event
   <*> parseReferer
   <*> parseUserAgent
 
-parseRemote :: Parser Text
+parseRemote :: Parser B.ByteString
 parseRemote = takeTill (== ' ') <* char ' '
 
-parseLogName :: Parser (Maybe Text)
-parseLogName = (char '-' *> pure Nothing <|> Just <$> takeTill (== ' ')) <* char ' '
+parseLogName :: Parser (Maybe B.ByteString)
+parseLogName = parseOptional ' ' <* char ' '
 
-parseAuthUser :: Parser (Maybe Text)
-parseAuthUser = (char '-' *> pure Nothing <|> Just <$> takeTill (== ' ')) <* char ' '
+parseAuthUser :: Parser (Maybe B.ByteString)
+parseAuthUser = parseOptional ' ' <* char ' '
 
 parseTimestamp :: Parser ZonedTime
 parseTimestamp = do
   time <- char '[' *> takeTill (== ']') <* string "] "
-  let time' = parseTime defaultTimeLocale timestampFormat (T.unpack time)
+  let time' = parseTime defaultTimeLocale timestampFormat (B.unpack time)
   maybe (fail "invalid timestamp") return time'
 
-parseRequest :: Parser Text
-parseRequest = parseQuoted >>= \txt ->
-  return $ case txt of { Just t -> t; Nothing -> T.empty }
+parseRequest :: Parser B.ByteString
+parseRequest = parseQuoted <* char ' '
 
 parseStatus :: Parser Int
 parseStatus = decimal <* char ' '
@@ -54,16 +52,22 @@ parseStatus = decimal <* char ' '
 parseBytes :: Parser Int
 parseBytes = decimal
 
-parseReferer :: Parser (Maybe Text)
-parseReferer = parseQuoted
+parseReferer :: Parser (Maybe B.ByteString)
+parseReferer = char ' ' *> parseOptionalQuoted <|> pure Nothing
 
-parseUserAgent :: Parser (Maybe Text)
-parseUserAgent = parseQuoted
+parseUserAgent :: Parser (Maybe B.ByteString)
+parseUserAgent = char ' ' *> parseOptionalQuoted <|> pure Nothing
 
 timestampFormat :: String
 timestampFormat = "%d/%b/%Y:%H:%M:%S %z"
 
-parseQuoted :: Parser (Maybe Text)
-parseQuoted = do
-  txt <- Just <$> (string " \"" *> takeTill (== '"') <* char '"') <|> pure Nothing
-  return $ txt >>= \t -> case t of { "-" -> Nothing; _ -> txt }
+parseOptional :: Char -> Parser (Maybe B.ByteString)
+parseOptional end = char '-' *> pure Nothing <|> Just <$> takeTill (== end)
+
+parseOptionalQuoted :: Parser (Maybe B.ByteString)
+parseOptionalQuoted = do
+  opt <- char '"' *> parseOptional '"' <* char '"'
+  return $ opt >>= \s -> case s of { "-" -> Nothing; _ -> opt }
+
+parseQuoted :: Parser B.ByteString
+parseQuoted = parseOptionalQuoted >>= \opt -> return $ maybe B.empty id opt
