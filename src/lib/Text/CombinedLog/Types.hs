@@ -1,18 +1,19 @@
 module Text.CombinedLog.Types where
 
+import Data.Text (Text)
 import qualified Data.Text as T
 import Data.Time.LocalTime
 
 data Event = Event
-    { remote :: T.Text
-    , logName :: Maybe T.Text
-    , authUser :: Maybe T.Text
+    { remote :: Text
+    , logName :: Maybe Text
+    , authUser :: Maybe Text
     , timestamp :: ZonedTime
-    , request :: T.Text
+    , request :: Text
     , status :: Int
     , bytes :: Int
-    , referer :: Maybe T.Text
-    , userAgent :: Maybe T.Text
+    , referer :: Maybe Text
+    , userAgent :: Maybe Text
     } deriving (Show, Eq)
 
 instance Eq ZonedTime where
