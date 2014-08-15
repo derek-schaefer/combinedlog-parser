@@ -1,4 +1,7 @@
-module Text.CombinedLog.Types where
+module Text.CombinedLog.Types
+    ( Event(..)
+    , ZonedTime(..)
+    ) where
 
 import qualified Data.ByteString.Char8 as B
 import Data.Time.LocalTime
