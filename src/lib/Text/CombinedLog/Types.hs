@@ -1,22 +1,17 @@
 module Text.CombinedLog.Types
-    ( Event(..)
-    , ZonedTime(..)
-    ) where
+    ( Event(..) ) where
 
 import qualified Data.ByteString.Char8 as B
-import Data.Time.LocalTime
+import Data.Time
 
 data Event = Event
     { remote :: B.ByteString
     , logName :: Maybe B.ByteString
     , authUser :: Maybe B.ByteString
-    , timestamp :: ZonedTime
+    , timestamp :: UTCTime
     , request :: B.ByteString
     , status :: Int
     , bytes :: Int
     , referer :: Maybe B.ByteString
     , userAgent :: Maybe B.ByteString
     } deriving (Show, Eq)
-
-instance Eq ZonedTime where
-    (ZonedTime t1 z1) == (ZonedTime t2 z2) = (t1 == t2) && (z1 == z2)

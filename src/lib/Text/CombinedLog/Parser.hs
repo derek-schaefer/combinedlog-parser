@@ -8,7 +8,7 @@ import Text.CombinedLog.Types
 import Control.Applicative
 import Data.Attoparsec.ByteString.Char8
 import qualified Data.ByteString.Char8 as B
-import Data.Time.Format
+import Data.Time
 import System.Locale
 
 readEvent :: B.ByteString -> Maybe Event
@@ -36,11 +36,11 @@ parseLogName = parseOptional ' ' <* char ' '
 parseAuthUser :: Parser (Maybe B.ByteString)
 parseAuthUser = parseOptional ' ' <* char ' '
 
-parseTimestamp :: Parser ZonedTime
+parseTimestamp :: Parser UTCTime
 parseTimestamp = do
   time <- char '[' *> takeTill (== ']') <* string "] "
   let time' = parseTime defaultTimeLocale timestampFormat (B.unpack time)
-  maybe (fail "invalid timestamp") return time'
+  maybe (fail "invalid timestamp") (return . zonedTimeToUTC) time'
 
 parseRequest :: Parser B.ByteString
 parseRequest = parseQuoted <* char ' '
