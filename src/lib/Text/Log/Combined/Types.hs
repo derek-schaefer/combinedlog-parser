@@ -1,5 +1,6 @@
-module Text.CombinedLog.Types
-    ( Event(..) ) where
+module Text.Log.Combined.Types
+    ( Event(..)
+    ) where
 
 import qualified Data.ByteString.Char8 as B
 import Data.Time

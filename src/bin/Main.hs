@@ -1,9 +1,8 @@
 module Main where
 
-import Text.CombinedLog
+import Text.Log.Combined
 
 import qualified Data.ByteString.Char8 as B
-import System.Environment
 
 main :: IO ()
 main = parseLines readEvent

@@ -1,18 +1,18 @@
-{-# LANGUAGE OverloadedStrings #-}
+module Text.Log.Combined.Parser
+    ( readEvent
+    ) where
 
-module Text.CombinedLog.Parser
-    ( readEvent ) where
-
-import Text.CombinedLog.Types
+import Text.Log.Combined.Types
 
 import Control.Applicative
 import Data.Attoparsec.ByteString.Char8
-import qualified Data.ByteString.Char8 as B
 import Data.Time
 import System.Locale
 
+import qualified Data.ByteString.Char8 as B
+
 readEvent :: B.ByteString -> Maybe Event
-readEvent src = either (\_ -> Nothing) Just ee
+readEvent src = case ee of { Right e -> Just e; _ -> Nothing }
     where ee = parseOnly parseEvent src
 
 parseEvent :: Parser Event
