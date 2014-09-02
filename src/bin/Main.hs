@@ -16,6 +16,6 @@ parseLines reader = do
       case (reader $ B.pack src) of
         Nothing -> putStrLn ""
         Just e  -> do
-             putStrLn $ show e
-             putStrLn ""
+          putStrLn $ show e
+          putStrLn ""
       parseLines reader

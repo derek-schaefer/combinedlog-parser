@@ -2,8 +2,8 @@ module Text.Log.Combined.Types
     ( Event(..)
     ) where
 
-import qualified Data.ByteString.Char8 as B
 import Data.Time
+import qualified Data.ByteString.Char8 as B
 
 data Event = Event
     { remote :: B.ByteString
